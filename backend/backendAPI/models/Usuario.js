@@ -1,10 +1,10 @@
 const mysql = require('mysql');
 conn = mysql.createConnection({
-    host: '192.168.0.100',
+    host: 'localhost',
     port: '3306',
     user: 'root',
     password: 'cencabo2016',
-    database: 'fedesoft'
+    database: 'denunciaAppDB'
 })
 let userModel = {};
 
@@ -24,9 +24,9 @@ userModel.getUsuario = (callback) => {
     )}
 };
 
-userModel.insertUser = (userData,(callback) => {  
+userModel.insertUser = (userData,callback) => {  
     if(conn){
-        conn.query('INSERT INTO usuario ?', userData,
+        conn.query('INSERT INTO usuario SET ?', userData,
         (error,result)=> {
             if(error){
                 throw error;

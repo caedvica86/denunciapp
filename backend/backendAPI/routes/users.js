@@ -10,13 +10,18 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-  //console.log(req.body);
+  console.log(req.body);
   const userData = {
-    Id : null,
-    Nombre: req.body.Nombre,
-    Clave : req.body.Clave
+    id : req.body.id,
+    nombre: req.body.nombre,
+    numeroDocumento: req.body.numeroDocumento,
+    email: req.body.email,
+    contrasena: req.body.contrasena,
+    Rol_idRol: req.body.rol
+
   };  
 
+  
   usu.insertUser(userData,(error,data)=>{
     if(data&& data.insertId){
       res.json({
