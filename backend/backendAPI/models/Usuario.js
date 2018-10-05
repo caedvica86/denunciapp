@@ -3,7 +3,7 @@ conn = mysql.createConnection({
     host: 'localhost',
     port: '3306',
     user: 'root',
-    password: 'cencabo2016',
+    password: '',
     database: 'denunciaAppDB'
 })
 let userModel = {};

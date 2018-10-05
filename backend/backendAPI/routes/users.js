@@ -1,6 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var usu = require('../models/Usuario')
+
+router.use(function(req, res, next){
+  res.header("Access-Control-Allow-Origin","*");
+  res.header("Access-Control-Allow-Headers","Origin, X-Requested With, Content-Type, Accept");
+  next();
+})
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   //res.json({users: [{name: 'Timmy'}]});
@@ -14,10 +21,11 @@ router.post('/', function(req, res, next) {
   const userData = {
     id : req.body.id,
     nombre: req.body.nombre,
-    numeroDocumento: req.body.numeroDocumento,
+    clave:req.body.clave
+    /*numeroDocumento: req.body.numeroDocumento,
     email: req.body.email,
     contrasena: req.body.contrasena,
-    Rol_idRol: req.body.rol
+    Rol_idRol: req.body.rol*/
 
   };  
 
