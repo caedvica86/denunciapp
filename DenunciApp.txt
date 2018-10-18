@@ -1,0 +1,146 @@
+CREATE TABLE IF NOT EXISTS `rol` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `rol` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `estado` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `tipodenuncia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `usuario` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(45) NOT NULL,
+  `numerodocumento` varchar(20) NOT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `rol` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `usuario_rol_fk` (`rol`),
+  CONSTRAINT `usuario_rol_fk` FOREIGN KEY (`rol`) REFERENCES `rol` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `cai` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `barrio` varchar(100) NOT NULL,
+  `direccion` varchar(100) NOT NULL,
+  `longitud` varchar(100) NOT NULL,
+  `latitud` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `policiaxcai` (
+  `Policia` int(11) NOT NULL,
+  `Cai` int(11) NOT NULL,
+  `fechainicio` date NOT NULL,
+  `fechafin` date NOT NULL,
+  KEY `policiaxcai_cai_fk` (`Cai`),
+  KEY `policiaxcai_usuario_fk` (`Policia`),
+  CONSTRAINT `policiaxcai_cai_fk` FOREIGN KEY (`Cai`) REFERENCES `cai` (`id`),
+  CONSTRAINT `policiaxcai_usuario_fk` FOREIGN KEY (`Policia`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `camara` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `latitud` varchar(100) NOT NULL,
+  `longitud` varchar(100) NOT NULL,
+  `url` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `usuariocamarahistorico` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `camaravista` int(11) NOT NULL,
+  `usuarioaccedio` int(11) NOT NULL,
+  `fechaconsulta` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `usuariocamarahistorico_usuario_fk` (`usuarioaccedio`),
+  KEY `usuariocamarahistorico_camara_fk` (`camaravista`),
+  CONSTRAINT `usuariocamarahistorico_camara_fk` FOREIGN KEY (`camaravista`) REFERENCES `camara` (`id`),
+  CONSTRAINT `usuariocamarahistorico_usuario_fk` FOREIGN KEY (`usuarioaccedio`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `actividad` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(100) NOT NULL,
+  `descripcion` varchar(500) NOT NULL,
+  `fechainicio` date NOT NULL,
+  `fechafin` date NOT NULL,
+  `estadoactividad` int(11) NOT NULL,
+  `usuariocreo` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `actividad_estado_fk` (`estadoactividad`),
+  KEY `actividad_usuario_fk` (`usuariocreo`),
+  CONSTRAINT `actividad_estado_fk` FOREIGN KEY (`estadoactividad`) REFERENCES `estado` (`id`),
+  CONSTRAINT `actividad_usuario_fk` FOREIGN KEY (`usuariocreo`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8; ;
+
+CREATE TABLE IF NOT EXISTS `actividadxusuario` (
+  `actividad` int(11) NOT NULL,
+  `participante` int(11) NOT NULL,
+  `fecharegistro` datetime NOT NULL,
+  KEY `actividadxusuario_usuario_fk` (`participante`),
+  KEY `actividadxusuario_actividad_fk` (`actividad`),
+  CONSTRAINT `actividadxusuario_actividad_fk` FOREIGN KEY (`actividad`) REFERENCES `actividad` (`id`),
+  CONSTRAINT `actividadxusuario_usuario_fk` FOREIGN KEY (`participante`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `denuncia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(500) NOT NULL,
+  `fechadenuncia` datetime NOT NULL,
+  `denunciante` int(11) NOT NULL,
+  `tipodenuncia` int(11) NOT NULL,
+  `estadodenuncia` int(11) NOT NULL,
+  `longitud` varchar(100) NOT NULL,
+  `latitud` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `denuncia_usuario_fk` (`denunciante`),
+  KEY `denuncia_estado_fk` (`estadodenuncia`),
+  KEY `denuncia_tipodenuncia_fk` (`tipodenuncia`),
+  CONSTRAINT `denuncia_estado_fk` FOREIGN KEY (`estadodenuncia`) REFERENCES `estado` (`id`),
+  CONSTRAINT `denuncia_tipodenuncia_fk` FOREIGN KEY (`tipodenuncia`) REFERENCES `tipodenuncia` (`id`),
+  CONSTRAINT `denuncia_usuario_fk` FOREIGN KEY (`denunciante`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `denunciaxcai` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `denuncia` int(11) NOT NULL,
+  `asignado` tinyint(1) NOT NULL,
+  `fechaasignacion` datetime DEFAULT NULL,
+  `policia_asignado` int(11) DEFAULT NULL,
+  `cai_asignado` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `denunciaxcai_usuario_fk` (`policia_asignado`),
+  KEY `denunciaxcai_cai_fk` (`cai_asignado`),
+  KEY `denunciaxcai_denuncia_fk` (`denuncia`),
+  CONSTRAINT `denunciaxcai_cai_fk` FOREIGN KEY (`cai_asignado`) REFERENCES `cai` (`id`),
+  CONSTRAINT `denunciaxcai_denuncia_fk` FOREIGN KEY (`denuncia`) REFERENCES `denuncia` (`id`),
+  CONSTRAINT `denunciaxcai_usuario_fk` FOREIGN KEY (`policia_asignado`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE IF NOT EXISTS `gestiondenuncia` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `observacion` varchar(500) NOT NULL,
+  `fechagestion` datetime NOT NULL,
+  `denuncia` int(11) NOT NULL,
+  `usuariogestiono` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `gestiondenuncia_usuario_fk` (`usuariogestiono`),
+  KEY `gestiondenuncia_denuncia_fk` (`denuncia`),
+  CONSTRAINT `gestiondenuncia_denuncia_fk` FOREIGN KEY (`denuncia`) REFERENCES `denuncia` (`id`),
+  CONSTRAINT `gestiondenuncia_usuario_fk` FOREIGN KEY (`usuariogestiono`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
